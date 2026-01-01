@@ -13,4 +13,4 @@ Allow: /index.html
 Allow: /og-image.png
 
 # Sitemap
-Sitemap: https://ca-hsr-clock.vercel.app/sitemap.xml
+Sitemap: https://high-speed-rail.vercel.app/sitemap.xml

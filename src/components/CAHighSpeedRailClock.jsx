@@ -65,7 +65,7 @@ export default function CAHighSpeedRailClock() {
   const costOverrun = ((projectedTotalLow - originalEstimate) / originalEstimate) * 100;
 
   const shareText = `California has spent ${formatCurrency(currentSpent, 0)} on High-Speed Rail since 2008. That's +${formatNumber(costOverrun, 0)}% over the original $33B estimate. 0 miles of high-speed track laid.`;
-  const shareUrl = 'https://ca-hsr-clock.vercel.app';
+  const shareUrl = 'https://high-speed-rail.vercel.app/';
   const xShareLink = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
 
   return (
