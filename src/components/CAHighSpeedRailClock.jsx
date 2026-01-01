@@ -26,10 +26,9 @@ export default function CAHighSpeedRailClock() {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
-    // Respect reduced motion preferences and optimize for mobile battery
+    // Respect reduced motion preferences
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const isMobile = window.matchMedia('(max-width: 768px)').matches;
-    const updateInterval = prefersReducedMotion ? 1000 : (isMobile ? 100 : 50);
+    const updateInterval = prefersReducedMotion ? 1000 : 50;
 
     const interval = setInterval(() => {
       const now = new Date();
@@ -117,7 +116,7 @@ export default function CAHighSpeedRailClock() {
         {/* Main Counter */}
         <div className="bg-black border-4 border-yellow-500/70 rounded-lg p-8 mb-8 text-center">
           <p className="text-yellow-400/80 text-sm uppercase tracking-widest mb-4">Total Spent to Date</p>
-          <p className="text-5xl md:text-7xl lg:text-8xl font-mono text-white tracking-wider drop-shadow-[0_0_30px_rgba(34,197,94,0.5)]">
+          <p className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-mono text-white tracking-wider drop-shadow-[0_0_30px_rgba(34,197,94,0.5)]">
             {formatCurrency(currentSpent, 0)}
           </p>
           <div className="flex items-center justify-center gap-2 mt-4">
