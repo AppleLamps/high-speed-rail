@@ -220,6 +220,50 @@ export default function CAHighSpeedRailClock() {
           </div>
         </div>
 
+        {/* Poll Section */}
+        <div className="bg-gray-800 border-2 border-cyan-500 rounded-lg p-5 mb-8">
+          <h3 className="text-cyan-400 text-sm uppercase tracking-wider mb-4 text-center font-semibold">
+            Are you happy with the progress so far?
+          </h3>
+
+          <div className="flex justify-center gap-8">
+            {/* Thumbs Up */}
+            <button
+              onClick={() => handleVote('up')}
+              disabled={hasVoted || isVoting}
+              className={`flex flex-col items-center gap-2 p-4 rounded-lg transition-all min-w-[100px] ${hasVoted
+                  ? 'bg-gray-700 cursor-default'
+                  : 'bg-gray-700 hover:bg-green-900/50 hover:border-green-500 cursor-pointer active:scale-95'
+                } border-2 ${hasVoted ? 'border-gray-600' : 'border-gray-600 hover:border-green-500'}`}
+            >
+              <span className="text-4xl" role="img" aria-label="thumbs up">👍</span>
+              <span className="text-2xl font-mono text-green-400">{formatNumber(pollVotes.up)}</span>
+              <span className="text-xs text-gray-400">Yes</span>
+            </button>
+
+            {/* Thumbs Down */}
+            <button
+              onClick={() => handleVote('down')}
+              disabled={hasVoted || isVoting}
+              className={`flex flex-col items-center gap-2 p-4 rounded-lg transition-all min-w-[100px] ${hasVoted
+                  ? 'bg-gray-700 cursor-default'
+                  : 'bg-gray-700 hover:bg-red-900/50 hover:border-red-500 cursor-pointer active:scale-95'
+                } border-2 ${hasVoted ? 'border-gray-600' : 'border-gray-600 hover:border-red-500'}`}
+            >
+              <span className="text-4xl" role="img" aria-label="thumbs down">👎</span>
+              <span className="text-2xl font-mono text-red-400">{formatNumber(pollVotes.down)}</span>
+              <span className="text-xs text-gray-400">No</span>
+            </button>
+          </div>
+
+          {hasVoted && (
+            <p className="text-center text-gray-400 text-sm mt-4">Thanks for voting!</p>
+          )}
+          {isVoting && (
+            <p className="text-center text-gray-400 text-sm mt-4">Submitting...</p>
+          )}
+        </div>
+
         {/* Time Elapsed Section */}
         <div className="mb-8">
           <h3 className="text-red-400 text-xs uppercase tracking-wider mb-3 text-center font-semibold">Time Elapsed</h3>
@@ -374,50 +418,6 @@ export default function CAHighSpeedRailClock() {
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Poll Section */}
-        <div className="bg-gray-800 border-2 border-cyan-500 rounded-lg p-5 mb-8">
-          <h3 className="text-cyan-400 text-sm uppercase tracking-wider mb-4 text-center font-semibold">
-            Are you happy with the progress so far?
-          </h3>
-
-          <div className="flex justify-center gap-8">
-            {/* Thumbs Up */}
-            <button
-              onClick={() => handleVote('up')}
-              disabled={hasVoted || isVoting}
-              className={`flex flex-col items-center gap-2 p-4 rounded-lg transition-all min-w-[100px] ${hasVoted
-                  ? 'bg-gray-700 cursor-default'
-                  : 'bg-gray-700 hover:bg-green-900/50 hover:border-green-500 cursor-pointer active:scale-95'
-                } border-2 ${hasVoted ? 'border-gray-600' : 'border-gray-600 hover:border-green-500'}`}
-            >
-              <span className="text-4xl" role="img" aria-label="thumbs up">👍</span>
-              <span className="text-2xl font-mono text-green-400">{formatNumber(pollVotes.up)}</span>
-              <span className="text-xs text-gray-400">Yes</span>
-            </button>
-
-            {/* Thumbs Down */}
-            <button
-              onClick={() => handleVote('down')}
-              disabled={hasVoted || isVoting}
-              className={`flex flex-col items-center gap-2 p-4 rounded-lg transition-all min-w-[100px] ${hasVoted
-                  ? 'bg-gray-700 cursor-default'
-                  : 'bg-gray-700 hover:bg-red-900/50 hover:border-red-500 cursor-pointer active:scale-95'
-                } border-2 ${hasVoted ? 'border-gray-600' : 'border-gray-600 hover:border-red-500'}`}
-            >
-              <span className="text-4xl" role="img" aria-label="thumbs down">👎</span>
-              <span className="text-2xl font-mono text-red-400">{formatNumber(pollVotes.down)}</span>
-              <span className="text-xs text-gray-400">No</span>
-            </button>
-          </div>
-
-          {hasVoted && (
-            <p className="text-center text-gray-400 text-sm mt-4">Thanks for voting!</p>
-          )}
-          {isVoting && (
-            <p className="text-center text-gray-400 text-sm mt-4">Submitting...</p>
-          )}
         </div>
 
         {/* Footer */}
