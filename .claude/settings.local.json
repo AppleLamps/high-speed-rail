@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Skill(seo-optimizer)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Skill(mobile-ux-review)"
     ]
   }
 }

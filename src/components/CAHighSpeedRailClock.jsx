@@ -26,9 +26,10 @@ export default function CAHighSpeedRailClock() {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
-    // Respect reduced motion preferences
+    // Respect reduced motion preferences and optimize for mobile battery
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const updateInterval = prefersReducedMotion ? 1000 : 50;
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    const updateInterval = prefersReducedMotion ? 1000 : (isMobile ? 100 : 50);
 
     const interval = setInterval(() => {
       const now = new Date();
@@ -69,7 +70,7 @@ export default function CAHighSpeedRailClock() {
   const xShareLink = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-4">
+    <div className="min-h-screen bg-gray-900 text-white p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
       <div className="max-w-6xl mx-auto">
         {/* Top Bar */}
         <div className="flex justify-between items-center mb-6">
@@ -78,7 +79,7 @@ export default function CAHighSpeedRailClock() {
             href="https://x.com/lamps_apple"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors group"
+            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors group p-2 -m-2 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
@@ -91,7 +92,7 @@ export default function CAHighSpeedRailClock() {
             href={xShareLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 border border-gray-600 hover:border-gray-500 px-4 py-2 rounded-full transition-all text-sm"
+            className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 border border-gray-600 hover:border-gray-500 px-4 py-3 rounded-full transition-all text-sm min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
@@ -282,7 +283,7 @@ export default function CAHighSpeedRailClock() {
         </div>
 
         {/* Footer */}
-        <div className="text-center text-gray-400 text-xs space-y-1">
+        <div className="text-center text-gray-400 text-sm space-y-1">
           <p>Data sources: CA High-Speed Rail Authority, US DOT, FRA Reports (2026)</p>
           <p>Spending rate estimated from public budget documents. For illustration purposes.</p>
         </div>
