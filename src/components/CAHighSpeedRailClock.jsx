@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 export default function CAHighSpeedRailClock() {
   // Base data points
@@ -24,6 +24,75 @@ export default function CAHighSpeedRailClock() {
 
   const [currentSpent, setCurrentSpent] = useState(baselineSpent);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [pollVotes, setPollVotes] = useState({ up: 0, down: 0 });
+  const [hasVoted, setHasVoted] = useState(false);
+  const [isVoting, setIsVoting] = useState(false);
+  const lastSaveRef = useRef(Date.now());
+
+  // Initialize database on first load (only runs once)
+  useEffect(() => {
+    const initDb = async () => {
+      try {
+        await fetch('/api/init-db', { method: 'POST' });
+      } catch (e) {
+        console.log('DB init skipped or failed:', e);
+      }
+    };
+    initDb();
+  }, []);
+
+  // Load saved spending from database on mount
+  useEffect(() => {
+    const loadSavedSpending = async () => {
+      try {
+        const res = await fetch('/api/spending');
+        const data = await res.json();
+        if (data.amountSpent && data.recordedAt) {
+          // Calculate current amount based on saved snapshot
+          const savedTime = new Date(data.recordedAt);
+          const now = new Date();
+          const secondsSinceSave = (now - savedTime) / 1000;
+          const currentAmount = data.amountSpent + (secondsSinceSave * spendingPerSecond);
+          setCurrentSpent(currentAmount);
+        }
+      } catch (e) {
+        console.log('Could not load saved spending:', e);
+      }
+    };
+    loadSavedSpending();
+  }, []);
+
+  // Load poll votes on mount
+  useEffect(() => {
+    const loadPollVotes = async () => {
+      try {
+        const res = await fetch('/api/poll');
+        const data = await res.json();
+        setPollVotes(data);
+      } catch (e) {
+        console.log('Could not load poll votes:', e);
+      }
+    };
+    loadPollVotes();
+
+    // Check if user has already voted (stored in localStorage)
+    const voted = localStorage.getItem('hsrPollVoted');
+    if (voted) setHasVoted(true);
+  }, []);
+
+  // Save spending to database every 10 minutes
+  const saveSpending = async (amount) => {
+    try {
+      await fetch('/api/spending', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amountSpent: amount })
+      });
+      lastSaveRef.current = Date.now();
+    } catch (e) {
+      console.log('Could not save spending:', e);
+    }
+  };
 
   useEffect(() => {
     // Respect reduced motion preferences
@@ -37,10 +106,36 @@ export default function CAHighSpeedRailClock() {
       const secondsSinceBaseline = (now - baselineDate) / 1000;
       const newTotal = baselineSpent + (secondsSinceBaseline * spendingPerSecond);
       setCurrentSpent(newTotal);
+
+      // Save to database every 10 minutes (600000 ms)
+      if (Date.now() - lastSaveRef.current >= 600000) {
+        saveSpending(newTotal);
+      }
     }, updateInterval);
 
     return () => clearInterval(interval);
   }, []);
+
+  // Handle poll vote
+  const handleVote = async (voteType) => {
+    if (hasVoted || isVoting) return;
+
+    setIsVoting(true);
+    try {
+      const res = await fetch('/api/poll', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ voteType })
+      });
+      const data = await res.json();
+      setPollVotes(data);
+      setHasVoted(true);
+      localStorage.setItem('hsrPollVoted', 'true');
+    } catch (e) {
+      console.log('Could not submit vote:', e);
+    }
+    setIsVoting(false);
+  };
 
   const formatCurrency = (amount, decimals = 0) => {
     return new Intl.NumberFormat('en-US', {
@@ -279,6 +374,50 @@ export default function CAHighSpeedRailClock() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Poll Section */}
+        <div className="bg-gray-800 border-2 border-cyan-500 rounded-lg p-5 mb-8">
+          <h3 className="text-cyan-400 text-sm uppercase tracking-wider mb-4 text-center font-semibold">
+            Are you happy with the progress so far?
+          </h3>
+
+          <div className="flex justify-center gap-8">
+            {/* Thumbs Up */}
+            <button
+              onClick={() => handleVote('up')}
+              disabled={hasVoted || isVoting}
+              className={`flex flex-col items-center gap-2 p-4 rounded-lg transition-all min-w-[100px] ${hasVoted
+                  ? 'bg-gray-700 cursor-default'
+                  : 'bg-gray-700 hover:bg-green-900/50 hover:border-green-500 cursor-pointer active:scale-95'
+                } border-2 ${hasVoted ? 'border-gray-600' : 'border-gray-600 hover:border-green-500'}`}
+            >
+              <span className="text-4xl" role="img" aria-label="thumbs up">👍</span>
+              <span className="text-2xl font-mono text-green-400">{formatNumber(pollVotes.up)}</span>
+              <span className="text-xs text-gray-400">Yes</span>
+            </button>
+
+            {/* Thumbs Down */}
+            <button
+              onClick={() => handleVote('down')}
+              disabled={hasVoted || isVoting}
+              className={`flex flex-col items-center gap-2 p-4 rounded-lg transition-all min-w-[100px] ${hasVoted
+                  ? 'bg-gray-700 cursor-default'
+                  : 'bg-gray-700 hover:bg-red-900/50 hover:border-red-500 cursor-pointer active:scale-95'
+                } border-2 ${hasVoted ? 'border-gray-600' : 'border-gray-600 hover:border-red-500'}`}
+            >
+              <span className="text-4xl" role="img" aria-label="thumbs down">👎</span>
+              <span className="text-2xl font-mono text-red-400">{formatNumber(pollVotes.down)}</span>
+              <span className="text-xs text-gray-400">No</span>
+            </button>
+          </div>
+
+          {hasVoted && (
+            <p className="text-center text-gray-400 text-sm mt-4">Thanks for voting!</p>
+          )}
+          {isVoting && (
+            <p className="text-center text-gray-400 text-sm mt-4">Submitting...</p>
+          )}
         </div>
 
         {/* Footer */}

@@ -7,8 +7,8 @@
     <!-- Primary Meta Tags -->
     <title>California High-Speed Rail Spending Clock | Real-Time Cost Tracker</title>
     <meta name="title" content="California High-Speed Rail Spending Clock | Real-Time Cost Tracker" />
-    <meta name="description" content="Watch California's High-Speed Rail spending tick up in real-time. Over $16 billion spent since 2008, with costs ballooning from $33B to $128B+. Track days elapsed, cost overruns, and miles completed." />
-    <meta name="keywords" content="California High-Speed Rail, HSR spending, bullet train cost, California train project, high speed rail cost overrun, CA HSR tracker, California infrastructure spending, Prop 1A, Central Valley rail, SF to LA train" />
+    <meta name="description" content="Watch California's High-Speed Rail spending tick up in real-time. Over $16 billion spent since 2008, costs ballooned from $33B to $128B+. Track spending, delays, and vote in our poll: Are you happy with the progress?" />
+    <meta name="keywords" content="California High-Speed Rail, HSR spending, bullet train cost, California train project, high speed rail cost overrun, CA HSR tracker, California infrastructure spending, Prop 1A, Central Valley rail, SF to LA train, California HSR poll, HSR public opinion, bullet train vote, CA rail survey" />
     <meta name="author" content="@lamps_apple" />
     <meta name="robots" content="index, follow" />
     <meta name="language" content="English" />
@@ -21,7 +21,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://high-speed-rail.vercel.app/" />
     <meta property="og:title" content="California High-Speed Rail Spending Clock" />
-    <meta property="og:description" content="Watch California's High-Speed Rail spending tick up in real-time. Over $16 billion spent, 221% over budget, and 0 miles of high-speed track laid." />
+    <meta property="og:description" content="Watch CA High-Speed Rail spending tick up in real-time. $16B+ spent, 221% over budget, 0 miles of track. Vote in our poll: Are you happy with the progress?" />
     <meta property="og:image" content="https://high-speed-rail.vercel.app/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -33,7 +33,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="https://high-speed-rail.vercel.app/" />
     <meta name="twitter:title" content="California High-Speed Rail Spending Clock" />
-    <meta name="twitter:description" content="Watch California's High-Speed Rail spending tick up in real-time. Over $16 billion spent, 221% over budget, and 0 miles of high-speed track laid." />
+    <meta name="twitter:description" content="Watch CA High-Speed Rail spending tick up in real-time. $16B+ spent, 221% over budget, 0 miles of track. Vote in our poll: Are you happy with the progress?" />
     <meta name="twitter:image" content="https://high-speed-rail.vercel.app/og-image.png" />
     <meta name="twitter:image:alt" content="California High-Speed Rail Spending Clock showing real-time spending counter" />
     <meta name="twitter:creator" content="@lamps_apple" />
@@ -140,6 +140,14 @@
             "@type": "Answer",
             "text": "The original completion target was 2020. Current projections estimate the Central Valley segment by 2032 and the full SF-LA connection by 2039."
           }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I vote on California High-Speed Rail progress?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes! Our site includes an interactive poll where visitors can share whether they're happy with the project's progress. Vote counts are displayed in real-time."
+          }
         }
       ]
     }
@@ -160,6 +168,29 @@
         "name": "lamps_apple",
         "url": "https://x.com/lamps_apple"
       }
+    }
+    </script>
+
+    <!-- Poll/Survey Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Question",
+      "name": "Are you happy with California High-Speed Rail progress?",
+      "text": "Interactive poll asking visitors whether they are satisfied with the progress of California's High-Speed Rail project",
+      "answerCount": 2,
+      "suggestedAnswer": [
+        {
+          "@type": "Answer",
+          "text": "Yes",
+          "url": "https://high-speed-rail.vercel.app/#poll"
+        },
+        {
+          "@type": "Answer",
+          "text": "No",
+          "url": "https://high-speed-rail.vercel.app/#poll"
+        }
+      ]
     }
     </script>
 
