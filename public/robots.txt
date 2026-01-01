@@ -1,0 +1,7 @@
+# robots.txt for CA High-Speed Rail Spending Clock
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://ca-hsr-clock.vercel.app/sitemap.xml
