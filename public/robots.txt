@@ -3,5 +3,14 @@
 User-agent: *
 Allow: /
 
+# Block build artifacts and non-content paths
+Disallow: /assets/
+Disallow: /*.js$
+Disallow: /*.css$
+
+# Allow search engines to access the main content
+Allow: /index.html
+Allow: /og-image.png
+
 # Sitemap
 Sitemap: https://ca-hsr-clock.vercel.app/sitemap.xml
