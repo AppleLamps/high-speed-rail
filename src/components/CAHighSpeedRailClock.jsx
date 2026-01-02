@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 export default function CAHighSpeedRailClock() {
+  const POLL_COOLDOWN_MS = 60 * 60 * 1000; // 1 hour
+  const POLL_LAST_VOTE_AT_KEY = 'hsrPollLastVoteAt';
+
   // Base data points
   const projectStartDate = new Date('2008-11-04'); // Prop 1A passed
   const constructionStartDate = new Date('2015-01-06');
@@ -25,9 +28,27 @@ export default function CAHighSpeedRailClock() {
   const [currentSpent, setCurrentSpent] = useState(baselineSpent);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [pollVotes, setPollVotes] = useState({ up: 0, down: 0 });
-  const [hasVoted, setHasVoted] = useState(false);
   const [isVoting, setIsVoting] = useState(false);
+  const [voteCooldownUntil, setVoteCooldownUntil] = useState(() => {
+    try {
+      const raw = localStorage.getItem(POLL_LAST_VOTE_AT_KEY);
+      const lastVoteAt = raw ? Number(raw) : 0;
+      if (!Number.isFinite(lastVoteAt) || lastVoteAt <= 0) return 0;
+      return lastVoteAt + POLL_COOLDOWN_MS;
+    } catch {
+      return 0;
+    }
+  });
   const lastSaveRef = useRef(Date.now());
+
+  const hasVoted = voteCooldownUntil > Date.now();
+
+  const formatDuration = (ms) => {
+    const totalSeconds = Math.max(0, Math.ceil(ms / 1000));
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${String(seconds).padStart(2, '0')}`;
+  };
 
   // Initialize database on first load (only runs once)
   useEffect(() => {
@@ -74,11 +95,34 @@ export default function CAHighSpeedRailClock() {
       }
     };
     loadPollVotes();
-
-    // Check if user has already voted (stored in localStorage)
-    const voted = localStorage.getItem('hsrPollVoted');
-    if (voted) setHasVoted(true);
   }, []);
+
+  // Clear cooldown when it expires
+  useEffect(() => {
+    if (!voteCooldownUntil) return;
+
+    const msLeft = voteCooldownUntil - Date.now();
+    if (msLeft <= 0) {
+      setVoteCooldownUntil(0);
+      try {
+        localStorage.removeItem(POLL_LAST_VOTE_AT_KEY);
+      } catch {
+        // ignore
+      }
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      setVoteCooldownUntil(0);
+      try {
+        localStorage.removeItem(POLL_LAST_VOTE_AT_KEY);
+      } catch {
+        // ignore
+      }
+    }, msLeft + 25);
+
+    return () => clearTimeout(timeoutId);
+  }, [voteCooldownUntil]);
 
   // Save spending to database every 10 minutes
   const saveSpending = async (amount) => {
@@ -129,8 +173,14 @@ export default function CAHighSpeedRailClock() {
       });
       const data = await res.json();
       setPollVotes(data);
-      setHasVoted(true);
-      localStorage.setItem('hsrPollVoted', 'true');
+      const now = Date.now();
+      setVoteCooldownUntil(now + POLL_COOLDOWN_MS);
+      try {
+        localStorage.setItem(POLL_LAST_VOTE_AT_KEY, String(now));
+        localStorage.removeItem('hsrPollVoted');
+      } catch {
+        // ignore
+      }
     } catch (e) {
       console.log('Could not submit vote:', e);
     }
@@ -232,8 +282,8 @@ export default function CAHighSpeedRailClock() {
               onClick={() => handleVote('up')}
               disabled={hasVoted || isVoting}
               className={`flex flex-col items-center gap-2 p-4 rounded-lg transition-all min-w-[100px] ${hasVoted
-                  ? 'bg-gray-700 cursor-default'
-                  : 'bg-gray-700 hover:bg-green-900/50 hover:border-green-500 cursor-pointer active:scale-95'
+                ? 'bg-gray-700 cursor-default'
+                : 'bg-gray-700 hover:bg-green-900/50 hover:border-green-500 cursor-pointer active:scale-95'
                 } border-2 ${hasVoted ? 'border-gray-600' : 'border-gray-600 hover:border-green-500'}`}
             >
               <span className="text-4xl" role="img" aria-label="thumbs up">👍</span>
@@ -246,8 +296,8 @@ export default function CAHighSpeedRailClock() {
               onClick={() => handleVote('down')}
               disabled={hasVoted || isVoting}
               className={`flex flex-col items-center gap-2 p-4 rounded-lg transition-all min-w-[100px] ${hasVoted
-                  ? 'bg-gray-700 cursor-default'
-                  : 'bg-gray-700 hover:bg-red-900/50 hover:border-red-500 cursor-pointer active:scale-95'
+                ? 'bg-gray-700 cursor-default'
+                : 'bg-gray-700 hover:bg-red-900/50 hover:border-red-500 cursor-pointer active:scale-95'
                 } border-2 ${hasVoted ? 'border-gray-600' : 'border-gray-600 hover:border-red-500'}`}
             >
               <span className="text-4xl" role="img" aria-label="thumbs down">👎</span>
@@ -257,7 +307,9 @@ export default function CAHighSpeedRailClock() {
           </div>
 
           {hasVoted && (
-            <p className="text-center text-gray-400 text-sm mt-4">Thanks for voting!</p>
+            <p className="text-center text-gray-400 text-sm mt-4">
+              Thanks for voting! You can vote again in {formatDuration(voteCooldownUntil - currentTime.getTime())}.
+            </p>
           )}
           {isVoting && (
             <p className="text-center text-gray-400 text-sm mt-4">Submitting...</p>
