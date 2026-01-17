@@ -237,7 +237,7 @@ export default function CAHighSpeedRailClock() {
         loop
         onEnded={() => setIsPlaying(false)}
       />
-      
+
       {/* Floating Music Control Button */}
       <button
         onClick={toggleMusic}
