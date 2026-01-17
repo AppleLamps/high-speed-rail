@@ -4,6 +4,21 @@ export default function CAHighSpeedRailClock() {
   const POLL_COOLDOWN_MS = 60 * 60 * 1000; // 1 hour
   const POLL_LAST_VOTE_AT_KEY = 'hsrPollLastVoteAt';
 
+  // Audio player state
+  const audioRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const toggleMusic = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
   // Base data points
   const projectStartDate = new Date('2008-11-04'); // Prop 1A passed
   const constructionStartDate = new Date('2015-01-06');
@@ -215,6 +230,32 @@ export default function CAHighSpeedRailClock() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+      {/* Background Music */}
+      <audio
+        ref={audioRef}
+        src="/Where'd You Go - Fort Minor _ Lyrics Song.mp3"
+        loop
+        onEnded={() => setIsPlaying(false)}
+      />
+      
+      {/* Floating Music Control Button */}
+      <button
+        onClick={toggleMusic}
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-gray-800 hover:bg-gray-700 border-2 border-yellow-500 rounded-full flex items-center justify-center transition-all hover:scale-110 shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
+        aria-label={isPlaying ? 'Pause music' : 'Play music'}
+        title={isPlaying ? 'Pause music' : 'Play music'}
+      >
+        {isPlaying ? (
+          <svg className="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
+          </svg>
+        ) : (
+          <svg className="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        )}
+      </button>
+
       <div className="max-w-6xl mx-auto">
         {/* Top Bar */}
         <div className="flex justify-between items-center mb-6">
